@@ -19,14 +19,13 @@ steps:
 - name: 'gcr.io/$PROJECT_ID/yarn:node-10.10.0'
   args: ['--version']
   
-- name: 'gcr.io/cloud-builders/npm'
-  entrypoint: 'node'
+- name: 'gcr.io/$PROJECT_ID/npm'
   args: ['--version']
 
 # Test the examples with :latest
 
 # hello_world
-- name: 'gcr.io/cloud-builders/npm'
+- name: 'gcr.io/$PROJECT_ID/npm'
   entrypoint: 'node'
   args: ['install']
   dir: 'JustParty-Frontend'
