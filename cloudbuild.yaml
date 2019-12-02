@@ -22,7 +22,7 @@ steps:
 # Test the examples with :latest
 
 # hello_world
-- name: 'gcr.io/$PROJECT_ID/yarn:latest'
+- name: 'gcr.io/$PROJECT_ID/npm'
   args: ['install']
   dir: 'JustParty-Frontend'
 - name: 'gcr.io/cloud-builders/docker'
