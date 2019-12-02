@@ -1,40 +1,14 @@
-# In this directory, run the following command to build this builder.
-# $ gcloud builds submit
-
 steps:
-# Build all supported versions.
-# TODO(jasonhall): Deprecate and stop building these tagged images. Users
-# should use the official node image directly.
+  # build the container image
 - name: 'gcr.io/cloud-builders/docker'
-  args:
-  - 'build'
-  - '--build-arg=NODE_VERSION=10.10.0'
-  - '--tag=gcr.io/$PROJECT_ID/yarn:node-10.10.0'
-  # 10.10.0 is tagged :current
-  - '--tag=gcr.io/$PROJECT_ID/yarn:current'
-  - '--tag=gcr.io/$PROJECT_ID/nodejs/yarn'
-  - '.'
-
-# Print for each version
-- name: 'gcr.io/$PROJECT_ID/yarn:node-10.10.0'
-  args: ['--version']
-  
-- name: 'gcr.io/$PROJECT_ID/npm'
-  args: ['--version']
-
-# Test the examples with :latest
-
-# hello_world
-- name: 'gcr.io/$PROJECT_ID/npm'
-  entrypoint: 'node'
-  args: ['install']
-  dir: 'JustParty-Frontend'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/hello-cloud-run2:${SHORT_SHA}', '.']
+  # push the container image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '.']
-  dir: 'JustParty-Frontend'
-
+  args: ['push', 'gcr.io/$PROJECT_ID/hello-cloud-run2']
+  # deploy container image to Cloud Run
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['beta', 'run', 'deploy', 'hello-cloud-run2', '--image', 'gcr.io/$PROJECT_ID/hello-cloud-run2:${SHORT_SHA}', '--platform', 'managed', '--region', 'us-central1', '--allow-unauthenticated']
+  env:
+  - 'PORT=8080'
 images:
-- 'gcr.io/$PROJECT_ID/yarn:latest'
-- 'gcr.io/$PROJECT_ID/yarn:current'
-- 'gcr.io/$PROJECT_ID/yarn:node-10.10.0'
-
+- gcr.io/$PROJECT_ID/hello-cloud-run2
